@@ -1,0 +1,25 @@
+{
+  "name": "protopack",
+  "version": "0.0.1-alpha.1",
+  "description": "A bundler for prototypes.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mariuslundgard/protopack.git"
+  },
+  "keywords": [
+    "web",
+    "bundler",
+    "prototype",
+    "preprocessing"
+  ],
+  "author": "Marius Lundgård <studio@mariuslundgard.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mariuslundgard/protopack/issues"
+  },
+  "homepage": "https://github.com/mariuslundgard/protopack#readme"
+}
