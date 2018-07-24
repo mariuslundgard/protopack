@@ -1,0 +1,8 @@
+.foo {
+  display: flex;
+  color: #f00;
+}
+
+::placeholder {
+  color: gray;
+}

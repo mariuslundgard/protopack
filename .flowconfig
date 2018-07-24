@@ -1,0 +1,10 @@
+[include]
+src/
+test/
+
+[ignore]
+node_modules/
+
+[libs]
+
+[options]
