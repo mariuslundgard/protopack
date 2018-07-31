@@ -12,7 +12,7 @@ async function dev (opts = {}) {
 
   opts.baseUrl = `http://localhost:${port}`
 
-  let configArr = await readConfigArr(opts)
+  let configArr
   let watcher
   let results
 
@@ -30,16 +30,20 @@ async function dev (opts = {}) {
     })
 
     watcher.on('all', async (...args) => {
-      configArr = await readConfigArr(opts)
-      ;[results] = await build()
-      results.forEach(result => {
-        console.log(
-          'rebuilt',
-          chalk.green(path.relative(process.cwd(), result.output.path))
-        )
-      })
-      unwatch()
-      watch()
+      try {
+        configArr = await readConfigArr(opts)
+        ;[results] = await build()
+        results.forEach(result => {
+          console.log(
+            'rebuilt',
+            chalk.green(path.relative(process.cwd(), result.output.path))
+          )
+        })
+        unwatch()
+        watch()
+      } catch (err) {
+        console.error(err)
+      }
     })
   }
 
@@ -47,13 +51,19 @@ async function dev (opts = {}) {
     watcher.close()
   }
 
-  ;[results] = await build()
-  results.forEach(result => {
-    console.log(
-      'built',
-      chalk.green(path.relative(process.cwd(), result.output.path))
-    )
-  })
+  try {
+    configArr = await readConfigArr(opts)
+    ;[results] = await build()
+    results.forEach(result => {
+      console.log(
+        'built',
+        chalk.green(path.relative(process.cwd(), result.output.path))
+      )
+    })
+  } catch (err) {
+    console.log(err)
+    process.exit(1)
+  }
 
   const app = express()
 
