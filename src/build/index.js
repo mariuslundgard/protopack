@@ -13,7 +13,9 @@ async function build (opts = {}) {
     configArr.map(config => fs.rimraf(path.dirname(config.output)))
   )
 
-  return buildAll(configArr).then(r => r[0])
+  return buildAll(configArr).then(resultsArr =>
+    resultsArr.reduce((arr, results) => arr.concat(results))
+  )
 }
 
 module.exports = build

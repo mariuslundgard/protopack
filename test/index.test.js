@@ -45,4 +45,21 @@ describe('protopack', () => {
       '<script type="module" src="http://localhost:8080/index.js"></script>'
     )
   })
+
+  it('should output names', async () => {
+    const opts = {
+      cwd: path.resolve(fixtures, 'output-names')
+    }
+
+    const results = await protopack.build(opts)
+
+    expect(results[0].output.path.endsWith('/widget.html')).toBe(true)
+    expect(results[1].output.path.endsWith('/widget.js')).toBe(true)
+
+    const js = await readFileToString(results[1].output.path)
+
+    expect(js).toEqual(
+      `console.log('foo');\n//# sourceMappingURL=widget.js.map\n`
+    )
+  })
 })

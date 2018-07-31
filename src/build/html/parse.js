@@ -6,7 +6,7 @@ function parse (str) {
   const result = {
     document: {
       type: '#document',
-      doctype: '',
+      doctype: null,
       children: []
     },
     imports: []
@@ -28,6 +28,15 @@ function parse (str) {
 
   const parser = new htmlparser.Parser(
     {
+      onprocessinginstruction (name, value) {
+        if (name === '!doctype') {
+          result.document.doctype = value
+        }
+      },
+      oncomment (value) {
+        push({type: 'comment', value})
+        pop()
+      },
       onopentag (name, attrs) {
         push({type: 'element', name, attrs, children: []})
         if (name === 'script' && attrs.src) {

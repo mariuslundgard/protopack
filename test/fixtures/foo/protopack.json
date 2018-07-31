@@ -1,6 +1,0 @@
-[
-  {
-    "input": "./src/index.html",
-    "output": "./dist/index.html"
-  }
-]

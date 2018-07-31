@@ -66,10 +66,18 @@ function compile (node, config) {
   }
 
   switch (node.type) {
-    case '#document':
-      return `<!doctype html>${node.children
+    case '#document': {
+      let doctype = ''
+      if (node.doctype) {
+        doctype = `<${node.doctype}>`
+      }
+      return `${doctype}${node.children
         .map(child => compile(child, config))
         .join('')}`
+    }
+
+    case 'comment':
+      return `<!--${node.value}-->`
 
     case 'element':
       const isVoid = ~voidTagNames.indexOf(node.name)

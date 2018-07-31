@@ -3,19 +3,11 @@
 const path = require('path')
 const rollup = require('rollup')
 
-// Rollup plugins
+// rollup plugins
 const babel = require('rollup-plugin-babel')
 const resolve = require('rollup-plugin-node-resolve')
 const replace = require('rollup-plugin-replace')
 const {uglify} = require('rollup-plugin-uglify')
-// function html () {
-//   return {
-//     name: 'html',
-//     resolveId (importee, importer) {
-//       return null
-//     }
-//   }
-// }
 
 const babelOpts = {
   presets: [
@@ -34,7 +26,8 @@ const babelOpts = {
     require.resolve('babel-plugin-transform-class-properties'),
     require.resolve('babel-plugin-transform-flow-strip-types'),
     require.resolve('babel-plugin-transform-object-rest-spread'),
-    [require.resolve('babel-plugin-transform-react-jsx'), {pragma: 'h'}]
+    [require.resolve('babel-plugin-transform-react-jsx'), {pragma: 'h'}],
+    require.resolve('babel-plugin-syntax-dynamic-import')
   ]
 }
 
@@ -58,13 +51,18 @@ async function buildJs (config) {
     process.env.NODE_ENV === 'production' && uglify()
   ]
 
+  const outputInfo = path.parse(config.output)
+
   const inputOpts = {
-    input: config.input,
-    plugins
+    input: {
+      [outputInfo.name]: config.input
+    },
+    plugins,
+    experimentalCodeSplitting: true
   }
 
   const outputOpts = {
-    file: config.output,
+    dir: path.dirname(config.output),
     format: 'es',
     sourcemap: true
   }
