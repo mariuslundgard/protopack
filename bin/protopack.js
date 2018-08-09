@@ -5,7 +5,7 @@
 const chalk = require('chalk')
 const path = require('path')
 const argv = require('yargs').argv
-const protopack = require('../')
+const protopack = require('../dist/protopack')
 const pkg = require('../package.json')
 
 function printUsage () {

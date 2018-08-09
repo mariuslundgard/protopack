@@ -7,9 +7,12 @@ const readFile = promisify(fs.readFile)
 
 function fileExistsOrThrow (filepath) {
   return new Promise((resolve, reject) => {
-    fs.exists(filepath, result => {
-      if (result) return resolve()
-      reject(new Error(`File does not exist: ${filepath}`))
+    fs.access(filepath, fs.constants.F_OK, err => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
     })
   })
 }

@@ -1,24 +1,28 @@
-'use strict'
+// @flow
 
-const chalk = require('chalk')
-const chokidar = require('chokidar')
-const express = require('express')
-const path = require('path')
-const buildAll = require('../build/buildAll')
-const readConfigArr = require('../lib/readConfigArr')
+import chalk from 'chalk'
+import chokidar from 'chokidar'
+import express from 'express'
+import path from 'path'
+import buildAll from '../build/buildAll'
+import readConfigArr from '../lib/readConfigArr'
 
-async function dev (opts = {}) {
+import type {$Request, $Response, NextFunction} from 'express'
+
+type Opts = {
+  baseUrl: string,
+  cwd: string,
+  port?: number
+}
+
+async function dev (opts: Opts) {
   const port = opts.port || 8080
 
   opts.baseUrl = `http://localhost:${port}`
 
   let configArr
   let watcher
-  let results
-
-  function build () {
-    return buildAll(configArr)
-  }
+  let results = []
 
   function watch () {
     const watchedPaths = results
@@ -31,8 +35,8 @@ async function dev (opts = {}) {
 
     watcher.on('all', async (...args) => {
       try {
-        configArr = await readConfigArr(opts)
-        ;[results] = await build()
+        configArr = await readConfigArr({baseUrl: opts.baseUrl, cwd: opts.cwd})
+        ;[results] = await buildAll(configArr)
         results.forEach(result => {
           console.log(
             'rebuilt',
@@ -52,8 +56,9 @@ async function dev (opts = {}) {
   }
 
   try {
-    configArr = await readConfigArr(opts)
-    ;[results] = await build()
+    configArr = await readConfigArr({baseUrl: opts.baseUrl, cwd: opts.cwd})
+    ;[results] = await buildAll(configArr)
+    // console.log(results)
     results.forEach(result => {
       console.log(
         'built',
@@ -67,12 +72,12 @@ async function dev (opts = {}) {
 
   const app = express()
 
-  app.use((req, res, next) => {
+  app.use((req: $Request, res: $Response, next: NextFunction) => {
     console.log(req.method, req.url)
     next()
   })
 
-  app.use(express.static(path.dirname(results[0].output.path)))
+  app.use(express.static(results[0].output.basePath))
 
   app.listen(port, err => {
     if (err) {
@@ -85,4 +90,4 @@ async function dev (opts = {}) {
   })
 }
 
-module.exports = dev
+export default dev

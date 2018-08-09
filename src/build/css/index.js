@@ -1,17 +1,19 @@
-'use strict'
+// @flow
 
-const postcss = require('postcss')
-const fs = require('../../lib/fs')
+import postcss from 'postcss'
+import {readFile, writeFile} from '../../lib/fs'
 
 // postcss plugins
-const autoprefixer = require('autoprefixer')
-const cssnano = require('cssnano')
-const postcssCustomProperties = require('postcss-custom-properties')
-const postcssImport = require('postcss-import')
-const postcssNesting = require('postcss-nesting')
+import autoprefixer from 'autoprefixer'
+import cssnano from 'cssnano'
+import postcssCustomProperties from 'postcss-custom-properties'
+import postcssImport from 'postcss-import'
+import postcssNesting from 'postcss-nesting'
 
-async function buildCss (config) {
-  const buf = await fs.readFile(config.input)
+import type {BuildEntry} from '../../types'
+
+async function buildCss (config: BuildEntry) {
+  const buf = await readFile(config.input.path)
 
   const plugins = [
     postcssImport,
@@ -22,35 +24,32 @@ async function buildCss (config) {
   ].filter(Boolean)
 
   const result = await postcss(plugins).process(buf, {
-    from: config.input,
-    to: config.output,
+    from: config.input.path,
+    to: config.output.path,
     map: {inline: false}
   })
 
-  await fs.writeFile(config.output, result.css)
+  await writeFile(config.output.path, result.css)
 
   if (result.map) {
-    await fs.writeFile(config.output + '.map', result.map)
+    await writeFile(config.output.path + '.map', result.map)
   }
 
   return [
     {
       type: 'css',
-      input: {
-        path: config.input
-      },
-      output: {
-        path: config.output
-      }
+      input: config.input,
+      output: config.output
     },
     {
       type: 'css.map',
       input: null,
       output: {
-        path: config.output + '.map'
+        basePath: config.output.basePath,
+        path: config.output.path + '.map'
       }
     }
   ]
 }
 
-module.exports = buildCss
+export default buildCss

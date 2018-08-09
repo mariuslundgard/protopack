@@ -1,12 +1,18 @@
-'use strict'
+// @flow
+
+import cssBuilder from './css'
+import htmlBuilder from './html'
+import jsBuilder from './js'
+
+import type {BuildEntry} from '../types'
 
 const builders = {
-  css: require('./css'),
-  html: require('./html'),
-  js: require('./js')
+  css: cssBuilder,
+  html: htmlBuilder,
+  js: jsBuilder
 }
 
-async function buildAll (configArr) {
+async function buildAll (configArr: BuildEntry[]) {
   return Promise.all(
     configArr.map(config => {
       if (!builders[config.type]) {
@@ -18,4 +24,4 @@ async function buildAll (configArr) {
   )
 }
 
-module.exports = buildAll
+export default buildAll

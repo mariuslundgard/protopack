@@ -1,21 +1,20 @@
-'use strict'
+// @flow
 
-const path = require('path')
-const fs = require('../lib/fs')
-const readConfigArr = require('../lib/readConfigArr')
-const buildAll = require('./buildAll')
+import {rimraf} from '../lib/fs'
+import readConfigArr from '../lib/readConfigArr'
+import buildAll from './buildAll'
 
-async function build (opts = {}) {
+import type {BuildOpts} from '../types'
+
+async function build (opts: BuildOpts) {
   const configArr = await readConfigArr(opts)
 
   // Clean up
-  await Promise.all(
-    configArr.map(config => fs.rimraf(path.dirname(config.output)))
-  )
+  await Promise.all(configArr.map(config => rimraf(config.output.basePath)))
 
   return buildAll(configArr).then(resultsArr =>
-    resultsArr.reduce((arr, results) => arr.concat(results))
+    resultsArr.reduce((acc, x) => acc.concat(x), [])
   )
 }
 
-module.exports = build
+export default build

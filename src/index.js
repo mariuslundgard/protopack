@@ -1,6 +1,8 @@
-'use strict'
+// @flow
 
-const build = require('./build')
-const dev = require('./dev')
+import build from './build'
+import dev from './dev'
+import middleware from './middleware'
 
-module.exports = {build, dev}
+export {build, dev, middleware}
+export default {build, dev, middleware}

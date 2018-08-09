@@ -2,13 +2,19 @@
   "name": "protopack",
   "version": "0.0.1-alpha.4",
   "description": "A bundler for prototypes.",
-  "main": "src/index.js",
+  "main": "dist/protopack.js",
+  "module": "dist/protopack.es.js",
   "bin": {
     "protopack": "./bin/protopack.js"
   },
   "scripts": {
+    "build": "rollup -c",
     "format": "prettier-eslint --write \"{bin,src,test}/**/*.js\"",
-    "test": "jest --verbose"
+    "lint": "eslint .",
+    "prebuild": "rimraf dist",
+    "prepublishOnly": "npm run build",
+    "test": "jest --verbose",
+    "typecheck": "flow check"
   },
   "repository": {
     "type": "git",
@@ -28,7 +34,8 @@
   "homepage": "https://github.com/mariuslundgard/protopack#readme",
   "devDependencies": {
     "babel-eslint": "^8.2.6",
-    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "eslint": "^5.2.0",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-babel": "^5.1.0",
@@ -39,15 +46,15 @@
     "eslint-plugin-standard": "^3.1.0",
     "flow-bin": "^0.77.0",
     "jest": "^23.4.1",
-    "prettier-eslint-cli": "^4.7.1"
+    "prettier-eslint-cli": "^4.7.1",
+    "rollup-plugin-node-resolve": "^3.3.0"
   },
   "dependencies": {
     "autoprefixer": "^9.0.1",
     "babel-core": "^6.26.3",
     "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-env": "^1.7.0",
     "chalk": "^2.4.1",
@@ -60,10 +67,10 @@
     "postcss-custom-properties": "^7.0.0",
     "postcss-import": "^11.1.0",
     "postcss-nesting": "^6.0.0",
+    "ramda": "^0.25.0",
     "rimraf": "^2.6.2",
-    "rollup": "^0.63.4",
+    "rollup": "^0.63.5",
     "rollup-plugin-babel": "^3.0.7",
-    "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^4.0.0",
     "yargs": "^12.0.1"

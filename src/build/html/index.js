@@ -1,48 +1,55 @@
-'use strict'
+// @flow
 
-const path = require('path')
-const fs = require('../../lib/fs')
-const compile = require('./compile')
-const parse = require('./parse')
+import path from 'path'
+import {mkdirp, readFile, writeFile} from '../../lib/fs'
+import compile from './compile'
+import parse from './parse'
 
-async function buildHtml (config, buildAll) {
-  const buf = await fs.readFile(config.input)
+import type {BuildAllFn, BuildEntry, BuildResult} from '../../types'
+
+async function buildHtml (
+  config: BuildEntry,
+  buildAll: BuildAllFn
+): Promise<BuildResult[]> {
+  const buf = await readFile(config.input.path)
 
   const result = parse(buf.toString())
 
   const output = compile(result.document, config)
 
-  await fs.mkdirp(path.dirname(config.output))
+  await mkdirp(path.dirname(config.output.path))
 
-  await fs.writeFile(config.output, output)
+  await writeFile(config.output.path, output)
 
   const importConfigArr = result.imports.map(i => {
-    const input = path.resolve(path.dirname(config.input), i.input)
+    const inputPath = path.resolve(config.input.dirPath, i.input)
+    const outputPath = path.resolve(config.output.dirPath, i.input)
 
     return {
       type: i.type,
-      input,
-      output: path.resolve(path.dirname(config.output), i.input),
-      basePath: config.basePath,
-      dirPath: path.dirname(input),
+      input: {
+        basePath: config.input.basePath,
+        dirPath: path.dirname(inputPath),
+        path: inputPath
+      },
+      output: {
+        basePath: config.output.basePath,
+        dirPath: path.dirname(outputPath),
+        path: outputPath
+      },
       baseUrl: config.baseUrl
     }
   })
 
   const imports = await buildAll(importConfigArr)
 
-  return [
+  return imports.reduce((acc, x) => acc.concat(x), [
     {
       type: 'html',
-      input: {
-        path: config.input
-      },
-      output: {
-        path: config.output
-      }
-    },
-    ...imports.reduce((x, y) => [...x, ...y], [])
-  ]
+      input: config.input,
+      output: config.output
+    }
+  ])
 }
 
-module.exports = buildHtml
+export default buildHtml

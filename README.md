@@ -35,9 +35,15 @@ NODE_ENV=production npx protopack build
 ### Node.js API
 
 ```js
+import path from 'path'
 import {build} from 'protopack'
 
-build({baseUrl: 'http://localhost:3000'})
+const opts = {
+  cwd: path.resolve(__dirname, '..'),
+  baseUrl: 'http://localhost:3000'
+}
+
+build(opts)
   .then(results => {
     console.log('Built ok')
   })
@@ -50,16 +56,18 @@ build({baseUrl: 'http://localhost:3000'})
 
 ```js
 import express from 'express'
+import path from 'path'
 import {expressMiddleware} from 'protopack'
 
 const app = express()
 
+const opts = {
+  cwd: path.resolve(__dirname, '..'),
+  baseUrl: 'http://localhost:3000'
+}
+
 // Use the middleware before routes
-app.use(
-  expressMiddleware({
-    baseUrl: 'http://localhost:3000'
-  })
-)
+app.use(expressMiddleware(opts))
 
 app.listen(3000, () => {
   console.log('Listening at http://localhost:3000')
@@ -74,4 +82,4 @@ app.listen(3000, () => {
 - [ ] Support custom `babel` presets/plugins
 - [ ] Support custom `postcss` plugins
 - [ ] Directory listing
-- [ ] `express` middleware
+- [x] `express` middleware

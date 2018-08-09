@@ -1,9 +1,26 @@
-'use strict'
+// @flow
 
-const htmlparser = require('htmlparser2')
+/* eslint-disable no-use-before-define */
 
-function parse (str) {
-  const result = {
+import htmlparser from 'htmlparser2'
+
+type CommentNode = {type: 'comment', value: string}
+type ElementNode = {type: 'element', name: string, children: Node[]}
+type Node = ElementNode | CommentNode | string
+
+type DocumentNode = {
+  type: '#document',
+  doctype: string | null,
+  children: Node[]
+}
+
+type AST = {
+  document: DocumentNode,
+  imports: any[]
+}
+
+function parse (str: string) {
+  const result: AST = {
     document: {
       type: '#document',
       doctype: null,
@@ -15,7 +32,13 @@ function parse (str) {
   let node = result.document
   let stack = [node]
 
-  function push (n) {
+  function push (n: Node) {
+    if (typeof node === 'string') {
+      throw new Error('Cannot append to text nodes')
+    }
+    if (node.type === 'comment') {
+      throw new Error('Cannot append to comment nodes')
+    }
     node.children.push(n)
     node = n
     stack.push(n)
@@ -66,4 +89,4 @@ function parse (str) {
   return result
 }
 
-module.exports = parse
+export default parse

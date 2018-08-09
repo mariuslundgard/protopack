@@ -1,6 +1,6 @@
-'use strict'
+// @flow
 
-const path = require('path')
+import path from 'path'
 
 function joinUrlPath (...args) {
   return args
@@ -17,7 +17,7 @@ function joinUrlPath (...args) {
 function resolveUrl (config, uri) {
   return joinUrlPath(
     config.baseUrl,
-    path.relative(config.basePath, config.dirPath),
+    path.relative(config.input.basePath, config.input.dirPath),
     uri
   )
 }
@@ -60,7 +60,7 @@ const voidTagNames = [
   'wbr'
 ]
 
-function compile (node, config) {
+function compile (node: any, config: any) {
   if (typeof node === 'string') {
     return node
   }
@@ -92,4 +92,4 @@ function compile (node, config) {
   }
 }
 
-module.exports = compile
+export default compile

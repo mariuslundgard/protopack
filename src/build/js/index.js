@@ -1,13 +1,16 @@
-'use strict'
+// @flow
 
-const path = require('path')
-const rollup = require('rollup')
+import path from 'path'
+import {chain} from 'ramda'
+import {rollup} from 'rollup'
 
 // rollup plugins
-const babel = require('rollup-plugin-babel')
-const resolve = require('rollup-plugin-node-resolve')
-const replace = require('rollup-plugin-replace')
-const {uglify} = require('rollup-plugin-uglify')
+import babel from 'rollup-plugin-babel'
+import resolve from 'rollup-plugin-node-resolve'
+import replace from 'rollup-plugin-replace'
+import {uglify} from 'rollup-plugin-uglify'
+
+import type {BuildEntry, BuildResult} from '../../types'
 
 const babelOpts = {
   presets: [
@@ -31,7 +34,7 @@ const babelOpts = {
   ]
 }
 
-async function buildJs (config) {
+async function jsBuilder (config: BuildEntry): Promise<BuildResult[]> {
   const plugins = [
     resolve({
       jsnext: true,
@@ -41,7 +44,7 @@ async function buildJs (config) {
     babel({
       ...babelOpts,
       babelrc: false,
-      include: path.resolve(config.basePath, '**')
+      include: path.resolve(config.input.basePath, '**')
     }),
     replace({
       'process.env.NODE_ENV': JSON.stringify(
@@ -51,44 +54,52 @@ async function buildJs (config) {
     process.env.NODE_ENV === 'production' && uglify()
   ]
 
-  const outputInfo = path.parse(config.output)
+  const outputInfo = path.parse(config.output.path)
 
   const inputOpts = {
     input: {
-      [outputInfo.name]: config.input
+      [outputInfo.name]: config.input.path
     },
     plugins,
     experimentalCodeSplitting: true
   }
 
   const outputOpts = {
-    dir: path.dirname(config.output),
+    dir: path.dirname(config.output.path),
     format: 'es',
     sourcemap: true
   }
 
-  const bundle = await rollup.rollup(inputOpts)
+  const bundle = await rollup(inputOpts)
+  const result = await bundle.write(outputOpts)
 
-  await bundle.write(outputOpts)
-
-  return [
-    {
-      type: 'js',
-      input: {
-        path: config.input
+  return chain(
+    name => [
+      {
+        type: 'js',
+        input: {
+          basePath: config.input.basePath,
+          path: path.join(config.input.dirPath, name)
+        },
+        output: {
+          basePath: config.output.basePath,
+          path: path.join(config.output.dirPath, name)
+        }
       },
-      output: {
-        path: config.output
+      {
+        type: 'js',
+        input: {
+          basePath: config.input.basePath,
+          path: path.join(config.input.dirPath, name + '.map')
+        },
+        output: {
+          basePath: config.output.basePath,
+          path: path.join(config.output.dirPath, name + '.map')
+        }
       }
-    },
-    {
-      type: 'js.map',
-      input: null,
-      output: {
-        path: config.output + '.map'
-      }
-    }
-  ]
+    ],
+    Object.keys(result.output)
+  )
 }
 
-module.exports = buildJs
+export default jsBuilder
