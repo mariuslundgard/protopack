@@ -52,12 +52,12 @@ build(opts)
   })
 ```
 
-### Express middleware (TODO)
+### Express middleware
 
 ```js
 import express from 'express'
 import path from 'path'
-import {expressMiddleware} from 'protopack'
+import {middleware} from 'protopack'
 
 const app = express()
 
@@ -67,7 +67,7 @@ const opts = {
 }
 
 // Use the middleware before routes
-app.use(expressMiddleware(opts))
+app.use(middleware(opts))
 
 app.listen(3000, () => {
   console.log('Listening at http://localhost:3000')
