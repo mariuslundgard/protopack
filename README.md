@@ -77,7 +77,7 @@ app.listen(3000, () => {
 ## TODO
 
 - [ ] Support images
-- [ ] Support inline styles/scripts (via [`inline-source`](https://github.com/popeindustries/inline-source#readme)?)
+- [x] Support inline styles/scripts (via [`inline-source`](https://github.com/popeindustries/inline-source#readme)?)
 - [ ] Hot-reloading
 - [ ] Support custom `babel` presets/plugins
 - [ ] Support custom `postcss` plugins
