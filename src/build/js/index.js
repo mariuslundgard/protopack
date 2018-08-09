@@ -9,6 +9,7 @@ import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
 import replace from 'rollup-plugin-replace'
 import {uglify} from 'rollup-plugin-uglify'
+import npmInstall from '../../lib/rollup-plugin-npm-install'
 
 import type {BuildEntry, BuildResult} from '../../types'
 
@@ -36,6 +37,9 @@ const babelOpts = {
 
 async function jsBuilder (config: BuildEntry): Promise<BuildResult[]> {
   const plugins = [
+    npmInstall({
+      basePath: config.input.basePath
+    }),
     resolve({
       jsnext: true,
       main: true,

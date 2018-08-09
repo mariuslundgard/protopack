@@ -3,6 +3,7 @@
 const fs = require('fs')
 const {promisify} = require('util')
 
+const rimraf = promisify(require('rimraf'))
 const readFile = promisify(fs.readFile)
 
 function fileExistsOrThrow (filepath) {
@@ -24,5 +25,6 @@ async function readFileToString (filepath) {
 
 module.exports = {
   fileExistsOrThrow,
-  readFileToString
+  readFileToString,
+  rimraf
 }

@@ -1,13 +1,15 @@
 'use strict'
 
 const path = require('path')
-const protopack = require('../')
-const {fileExistsOrThrow, readFileToString} = require('./helpers')
+const protopack = require('../src')
+const {fileExistsOrThrow, readFileToString, rimraf} = require('./helpers')
 
 const fixtures = path.resolve(__dirname, 'fixtures')
 
 describe('protopack', () => {
   it('should execute build command', async () => {
+    await rimraf(path.resolve(fixtures, 'foo/dist'))
+
     const opts = {
       cwd: path.resolve(fixtures, 'foo')
     }
@@ -16,6 +18,8 @@ describe('protopack', () => {
   })
 
   it('should output built files', async () => {
+    await rimraf(path.resolve(fixtures, 'foo/dist'))
+
     const opts = {
       cwd: path.resolve(fixtures, 'foo')
     }
@@ -33,6 +37,8 @@ describe('protopack', () => {
   })
 
   it('should rewrite urls', async () => {
+    await rimraf(path.resolve(fixtures, 'foo/dist'))
+
     const opts = {
       cwd: path.resolve(fixtures, 'foo'),
       baseUrl: 'http://localhost:8080'
@@ -47,6 +53,8 @@ describe('protopack', () => {
   })
 
   it('should output names', async () => {
+    await rimraf(path.resolve(fixtures, 'output-names/dist'))
+
     const opts = {
       cwd: path.resolve(fixtures, 'output-names')
     }
@@ -60,6 +68,25 @@ describe('protopack', () => {
 
     expect(js).toEqual(
       `console.log('foo');\n//# sourceMappingURL=widget.js.map\n`
+    )
+  })
+
+  it('should install missing npm modules', async () => {
+    await rimraf(path.resolve(fixtures, 'install-npm-modules/dist'))
+    await rimraf(path.resolve(fixtures, 'install-npm-modules/node_modules'))
+    await rimraf(
+      path.resolve(fixtures, 'install-npm-modules/package-lock.json')
+    )
+
+    const opts = {
+      cwd: path.resolve(fixtures, 'install-npm-modules')
+    }
+
+    await protopack.build(opts)
+
+    // expect node_modules/preact to now exist
+    await fileExistsOrThrow(
+      path.resolve(fixtures, 'install-npm-modules/node_modules/preact')
     )
   })
 })

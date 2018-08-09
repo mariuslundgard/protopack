@@ -20,6 +20,7 @@ const babelOpts = {
 const external = [
   'autoprefixer',
   'chalk',
+  'child_process',
   'chokidar',
   'cssnano',
   'express',
@@ -32,6 +33,7 @@ const external = [
   'postcss-import',
   'postcss-nesting',
   'ramda',
+  'resolve',
   'rimraf',
   'rollup',
   'rollup-plugin-babel',

@@ -83,3 +83,4 @@ app.listen(3000, () => {
 - [ ] Support custom `postcss` plugins
 - [ ] Directory listing
 - [x] `express` middleware
+- [x] Install missing npm modules on `build()`
